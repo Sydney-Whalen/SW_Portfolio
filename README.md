@@ -9,5 +9,5 @@ Simmons University
 Expected Graduation date: May 2026
 
 ##Projects 
-[project1](https://Sydney-Whalen.gitbub.io/SW_Portfolio/Projects) 
+[project 1](https://Sydney-Whalen.gitbub.io/SW_Portfolio/Projects) 
 
