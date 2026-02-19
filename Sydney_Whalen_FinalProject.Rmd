@@ -1,0 +1,317 @@
+---
+title: "Female Representation in Comics"
+author: "Sydney Whalen"
+date: "12/15/2025"
+output: 
+  html_document:
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_download: true
+---
+# Introduction 
+The superhero genre has been a beloved blockbuster trend for the past decade of film releases. We've watched Batman and Superman fight on screen, Iron man and Captain America battle aliens, and although outnumbered to their male counterparts, we've also seen female superheros beat up those same villains. There is a noticeable difference however in the portrayal of these women, who are often isolated as the only women in their teams and are almost always seen pursuing romances with their teammates. Often these same women are placed in skin tight bodysuits and although made out to be intelligent and strong, are also undeniably portrayed as a sex symbol. 
+  
+  The superhero genre is also an action packed genre, always placing its characters in dire and desperate situations. Violent outcomes occur to all characters both male and female, however the damsel in distress tropes are especially noticeable in these movie adaptations (this can also be traced back to the comic book source material). For female superheros, sex and violence are inextricably linked.  
+  
+Within the past decade media there has been an increased attempt to counter isolated female narratives, as well as calling out one noted female characters. The Bechdel test is a well known test of female representation that can be used across all kinds of fictional media. This test was created in 1985 by a cartoonist named Alison Bechdel to poke fun at the lack of female representation she saw in her field and the world around her (Rund). The Bechdel test has three requirements to pass: 
+  
+  1) Two female characters must have a conversation with each other
+  
+  2) The women must be named characters
+  
+  3) The conversation has to be about something other than a man
+  
+Although not a perfect way to measure feminist values in a piece of media, the Bechdel test serves as a quantifiable measurement for a very subjective topic. 
+  
+# The Dataset
+To better understand female representation within the superhero genre, the following data analysis will be performed on a a joint data set consistent of 193 issues of the X-Men comic book series. These issues were released between the years 1976 and 1991. The two data sets that will be joined are the comic_bechdel dataset which lists whether the comic book issue passes the Bechdel test, and the character data set which lists every character of the ensemble that is in an issue, and what vulnerable or violent actions occurred to them in this issue. Examples of these actions include whether a character was rendered unconscious, how many times a character cried, and if the character had their clothing torn. 
+  
+The data set was created by Malcom Barret and was originally sourced from the tidytuesday repository. This data set was originally created to honor the work of Chris Claremont who wrote all the issues available in this data set. (https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-06-30/readme.md). 
+  
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+library(tidytuesdayR)
+tuesdata <- tidytuesdayR::tt_load('2020-06-30')
+tuesdata <- tidytuesdayR::tt_load(2020, week = 27)
+
+xmen_bechdel <- tuesdata$xmen_bechdel
+characters <- tuesdata$characters
+```
+
+# Analysis Question
+In joining these distinct data sets, the aim of this analysis is to create a predictive model that uses instances of character violence and vulnerability within an issue to predict whether that issue passes the Bechdel test. This predictive model answers the larger question if violence is a predictive factor of how good female representation is in superhero media.
+  
+The cleaning and analysis will utilize R packages tidyverse, caret, randomForest, pROC, and ROSE.
+  
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(randomForest)
+library(caret)
+library(pROC)
+library(ROSE)
+```
+
+# Preparing the Data 
+## Cleaning and Wrangling
+
+```{r}
+characters<-characters %>% 
+  filter(number_of_kills_non_humans<10) %>% #eliminating outlier 
+  mutate(is_woman=if_else(character %in% c("Ariel/Sprite/Shadowcat = Kitty Pryde",
+                                           "Binary/Ms Marvel = Carol Danvers" ,
+                                           "Dazzler = Alison Blaire" ,
+                                           "Marvel Girl/Phoenix = Jean Grey" ,
+                                           "Moira MacTaggert (scientist helper)" ,
+                                           "Mystique = Name Unknown" ,
+                                           "Phoenix(2) = Rachel Summers" ,
+                                           "Psylocke = Elizabeth (Betsy) Braddock" ,
+                                           "Rogue = Name Unknown" ,
+                                           "Storm = Ororo Munroe" ,
+                                           "Jubilee = Jubilation Lee"), 1, 0)) %>% #creating gender variable 
+  select(-c(initiates_physical_conflict, expresses_reluctance_to_fight, 
+            on_a_date_with_which_character, kiss_with_which_character, 
+            hand_holding_with_which_character, flying_with_another_character,
+            dancing_with_which_character, arm_in_arm_with_which_character,
+            hugging_with_which_character, physical_contact_other,
+            carrying_with_which_character, shared_bed_with_which_character,
+            shared_room_domestically_with_which_character, 
+            explicitly_states_i_love_you_to_whom, shared_undress,
+            special_notes)) #removing variables with majority na and character values
+
+```
+
+This pipeline cleans the data in three ways. First an outlier in the number of kills for non-humans was removed. The outlier was about five million where the rest of the data points fell below ten. This outlier was removed to make later visualizations more clear. The second function on this pipeline creates a new varaible that lists whether the character is a woman or not. This variable was created by cross referencing characters names with their listed gender in the Marvel Comics database (source). Lastly the third function removes all variables whose cells are character values or NA values instead of binary variables. 
+  
+## Joining
+```{r, warning = FALSE, message = FALSE}
+bechdel_join<- xmen_bechdel %>% 
+  inner_join(characters, by="issue") %>% 
+  select(-c(notes, reprint, depicted_eating_food))
+```
+
+This pipeline joins the characters data set with the comic_bechdel data set by issue, and removes some unnecessary character variables from the comic_bechdel data set. The depicted_eating_food variable is also removed from the joint data set as it does not fit the analysis question of violent or vulnerable character actions.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+bechdel_join_cumulative<-bechdel_join %>% 
+  group_by(issue) %>% 
+  summarize(total_unconcious=sum(rendered_unconcious), total_captured=sum(captured),
+            total_declared_dead=sum(declared_dead), total_redressed=sum(redressed),
+            total_depowered=sum(depowered), total_clothing_torn=sum(clothing_torn),
+            total_torture=sum(subject_to_torture), 
+            total_surrender=sum(surrenders), total_kill_human=sum(number_of_kills_humans), 
+            total_kills_non_human=sum(number_of_kills_non_humans), 
+            total_shower=sum(shower_number_of_panels_shower_lasts), 
+            total_bath=sum(bath_number_of_panels_bath_lasts),
+            total_tears_panels=sum(visible_tears_number_of_panels), 
+            total_tears_instances=sum(visible_tears_number_of_intances)) %>% 
+  inner_join(xmen_bechdel, by="issue") %>% 
+  select(-c(notes,reprint,issue))
+```
+
+## Filtering
+```{r}
+bechdel_join_w<-bechdel_join %>% 
+  filter(is_woman==1) %>% 
+  select(-c(issue, character, is_woman))
+```
+
+Lastly the joint data set is filtered for just female characters to create the following predictive models on. Some varaibles are removed so short hand notation can be used for adding in all predictors from the data set when passing this table in through a model. 
+  
+# Visualizations
+## What actions of violence and vulnerability most affect female characters?
+```{r}
+characters_barchart<-characters %>% 
+  mutate(is_woman=as.factor(is_woman)) %>% 
+  group_by(is_woman) %>% 
+  summarize(total_unconcious=sum(rendered_unconcious), total_captured=sum(captured),
+            total_declared_dead=sum(declared_dead), total_redressed=sum(redressed),
+            total_depowered=sum(depowered), total_clothing_torn=sum(clothing_torn),
+            total_torture=sum(subject_to_torture), total_quit=sum(quits_team), 
+            total_surrender=sum(surrenders), total_kill_human=sum(number_of_kills_humans), 
+            total_kills_non_human=sum(number_of_kills_non_humans), 
+            total_shower=sum(shower_number_of_panels_shower_lasts), 
+            total_bath=sum(bath_number_of_panels_bath_lasts), total_eating=sum(depicted_eating_food),
+            total_tears_panels=sum(visible_tears_number_of_panels), 
+            total_tears_instances=sum(visible_tears_number_of_intances)) %>% 
+  select(-total_eating) %>% 
+  pivot_longer(total_unconcious:total_tears_instances, names_to="actions", values_to="count") %>% 
+  arrange(desc(count))
+
+ggplot(characters_barchart, aes(x=reorder(actions,count), y=count))+
+  geom_col(aes(fill=is_woman), position="stack")+
+  scale_fill_manual(values=c("navy", "violetred"))+
+  coord_flip()+
+  theme_minimal()+
+  labs(y="Frequency",
+       x="Character Actions (Cumulative)",
+       title="Frequency of Character Actions",
+       subtitle="By Sex of Character")
+```
+
+This chart illustrates what forms of violence and vulnerability are prevalent most in the X-Men series, and also displays the proportion of male and female characters who endure these actions. The X-Men ensemble is made up of 23 characters, 11 of which are women. Characters rendered unconscious is the most prevalent form of violence, but is evenly proportioned between whether it happens to male or female characters. Given the ensemble is evenly split by gender, it makes sense some of these categories are also evenly distributed by gender.
+  
+The noticeable categories where female characters experience that form of vulnerability far more than their male counterparts is the number of times a character cries, the total number of panels dedicated to a character crying, and the number of times a character is shown showering.
+
+# Logistic Regression
+```{r, warning = FALSE, message = FALSE}
+set.seed(121025)
+bechdel_join_w$pass_bechdel<-as.factor(bechdel_join_w$pass_bechdel)
+train.index <- createDataPartition(bechdel_join_w$pass_bechdel, p= 0.8, list = FALSE)
+train <- bechdel_join_w[train.index,]
+test <- bechdel_join_w[-train.index,]
+logistic_train <- train(pass_bechdel~.,
+                        data=train, method = "glm", family="binomial")
+summary(logistic_train)
+predictions <-predict(logistic_train, newdata=test)
+predictions_prob <-predict(logistic_train, newdata=test, type="prob")
+confusion1<-confusionMatrix(data=predictions, test$pass_bechdel, positive="yes")
+confusion1
+ROC <- roc(test$pass_bechdel~predictions_prob$`yes`,
+           plot= TRUE, legacy.axes=T)
+auc(ROC)
+
+table(xmen_bechdel$pass_bechdel)
+table(bechdel_join_cumulative$pass_bechdel)
+```
+
+This logistic model is trained on all individual female characters. For each issue, the observation is multiplied by the number of female characters prevalent in them, increasing the original 193 observations to 2122 observations. The model uses all predictors in the data set to predict if the issue will pass the Bechdel test.
+
+Immediately noticeable in the ROC graph is that the model works just as well as chance guessing, with an area under the curve of .52. Also noticeable in the model summary is the specificity of 0 which represents how accurately the model guesses the negative case. This is corroborated by the confusion matrix which displays that out of the testing data, the model never tried to predict the negative case. There is a misleading accuracy percentage of 78% which represents that when the model always guesses the positive case that an issue passes the Bechdel test, 78% of the data matches that prediction.
+
+Available in the summary of the logistic model are the listed significance levels of all predictors used in the model. All p-values are greater than .05, which indicates not a single predictor used in this model is significant at determining if an issue will pass the Bechdel test.
+
+The original comic_bechdel data set was relatively balanced, as illustrated in the tables beneath the model summary, where 262 issues failed and 282 passed out of 545 observations. The issues recorded for the characters data set happen to be an unbalanced sample where 42 fail and 151 pass. This unbalanced data is potentially what contributes to the poor logistic model.
+
+# Random Forest Model
+```{r}
+set.seed(121025)
+train.index <- createDataPartition(bechdel_join_w$pass_bechdel, p = 0.8, list =
+                                     FALSE)
+bechdel_train <- bechdel_join_w[train.index,]
+bechdel_test <- bechdel_join_w[-train.index,]
+
+#fit model
+set.seed(121025)
+rf_model<-randomForest(pass_bechdel~., data=bechdel_train)
+
+#pick number of trees
+oob.error.data<-data.frame(
+  Trees= rep(1:nrow(rf_model$err.rate), times=3), 
+  Type= rep(c("OOB", "No", "Yes"), each=nrow(rf_model$err.rate)), 
+  Error= c(rf_model$err.rate[,"OOB"], rf_model$err.rate[,"no"], rf_model$err.rate[,"yes"] )
+)
+
+#plot error based on trees 
+ggplot(data=oob.error.data, aes(x=Trees, y=Error))+
+  geom_line(aes(color=Type))+
+  labs(title="Error Rate Across Number of Trees")
+```
+
+A similar issue as the logistic model is prevalent in this error rate visual. The no predictions are incorrectly classified 100% of the time. This is also likely due to the imbalanced data.
+  
+## Using SMOTE
+  
+```{r}
+smote_train_data <- ROSE(pass_bechdel ~ ., data  = bechdel_train, p=0.5)$data
+table(smote_train_data$pass_bechdel)
+
+rf_model<-randomForest(pass_bechdel~., data=smote_train_data)
+
+#pick number of trees
+oob.error.data<-data.frame(
+  Trees= rep(1:nrow(rf_model$err.rate), times=3), 
+  Type= rep(c("OOB", "No", "Yes"), each=nrow(rf_model$err.rate)), 
+  Error= c(rf_model$err.rate[,"OOB"], rf_model$err.rate[,"no"], rf_model$err.rate[,"yes"] )
+)
+
+#plot error based on trees 
+ggplot(data=oob.error.data, aes(x=Trees, y=Error))+
+  geom_line(aes(color=Type))+
+  labs(title="Error Rate Across Number of Trees",
+       subtitle="Using SMOTE")
+```
+
+In an attempt to force the random forest model to sample evenly from both the positive and negative cases, SMOTE was used. SMOTE is a technique that creates artificial negative cases to balance out the majority positive cases in the real data. The table for the SMOTE trained data displays the more balanced training data, which has 856 positive cases and 842 negative cases. Unfortunately, this graph shows unrealistic results where all types of error very quickly drop to 0%, which appears unrealistic and untrustworthy.
+
+## Class Weights
+```{r}
+bechdel_join_w$pass_bechdel <- factor(bechdel_join_w$pass_bechdel,
+                                      levels = c("yes", "no"))
+bechdel_counts<-table(bechdel_join_w$pass_bechdel)
+class_weight=sum(bechdel_counts) / (length(bechdel_counts) * bechdel_counts)
+
+rf_model<-randomForest(pass_bechdel~., data=bechdel_train, classwt=class_weight )
+
+#pick number of trees
+oob.error.data<-data.frame(
+  Trees= rep(1:nrow(rf_model$err.rate), times=3), 
+  Type= rep(c("OOB", "No", "Yes"), each=nrow(rf_model$err.rate)), 
+  Error= c(rf_model$err.rate[,"OOB"], rf_model$err.rate[,"no"], rf_model$err.rate[,"yes"] )
+)
+
+#plot error based on trees 
+ggplot(data=oob.error.data, aes(x=Trees, y=Error))+
+  geom_line(aes(color=Type))+
+  labs(title="Error Rate Across Number of Trees",
+       subtitle="Using Class Weights")
+```
+
+In a final attempt to alter the predictive model to evenly favor positive and negative cases, class weights were used. Class weights will penalize incorrect classifications for the negative case more than the majority positive case, and will prevent the random forest model from learning to predict the same case every time.
+
+Unfortunately this method still produces very bad results. Effectively, this error plot is an inverse of the original random forest model where this model cannot accurately predict the positive case ever.
+
+```{r}
+#represents 15 predictors 
+tune.grid= expand.grid(mtry=1:15)
+
+ctrl= trainControl(method="oob")
+
+set.seed(121025)
+rf_tuned= train(pass_bechdel~., 
+                data=bechdel_train, 
+                classwt=class_weight,
+                method="rf", 
+                trControl=ctrl,
+                tuneGrid= tune.grid, 
+                ntree= 150)
+
+#Final Model 
+set.seed(121025)
+rf_model_final<-randomForest(pass_bechdel~., 
+                             data=bechdel_train, 
+                             classwt=class_weight,
+                             mtry=rf_tuned$finalModel$tuneValue$mtry, 
+                             ntree=150)
+
+rf_model_final
+
+#model evaluation
+predictions <-predict(rf_model_final, newdata=bechdel_test)
+predictions_prob <-predict(rf_model_final, newdata=bechdel_test, type="prob")
+colnames(predictions_prob)
+ROC<-roc(response=bechdel_test$pass_bechdel, predictor=predictions_prob[,"yes"], plot=T, lecacy.axes=T)
+auc(ROC)
+```
+Moving ahead with the random forest analysis using the class weight method, the results for this model are not ideal. The model curve is under the random chance line which means this model performs worse than random chance, and worse than the logistic model. The class weights method was not ideal at all but was more probably than the SMOTE and slightly better than using no resampling method at all, however it is unsurprising to see bad results.  
+
+# Conclusion
+
+Given the poor results of the error plots, and two models that worked equally well as guessing, it is safe to conclude that you cannot use prevalence of violence and vulnerability against female characters in comics to predict whether the comic will pass the Bechdel test. This corroborates the original finding in the logistic model where no predictors were found to be significant.
+
+The unbalanced data made it difficult to obtain even predictions that favored both cases, however the failure of the class weights method suggests that these predictors have very little to do with the Bechdel test in general. This could be due to a variety of reasons: 
+
+1) The Bechdel test doesn't consider violence: The Bechdel test only concerns if women interact with each other, which is a measure more of female comradery and not a woman's safety. This analysis could have benefited from analyzing the prevalence of romantic actions (which were previously removed due to the amount of NA values) which may have correlated with the Bechdel test more.
+
+2) A balanced ensemble: The X-Men team is evenly split by gender, and as seen in the bar chart nearly every category is relatively proportioned equally between men and women with the exception of a few variables.
+
+3) Clustered sample: the comic issues in this analysis were all from the same series made by the same illustrator. This does not give a fair scope to the wider super genre, with other ensembles that may have more isolated female characters or more violent story lines. This analysis would benefit from a broader collection of comics.   
+
+
+# References
+Abdelfatahah, Rund. “What is the Bechdel test? A shorthand for measuring representation in movies.” NPR, 2023. NPR, https://www.npr.org/2023/04/05/1168116147/what-is-the-bechdel-test-a-shorthand-for-measuring-representation-in-movies.
+
+Barret, Malcom. Uncanny X-Men. 30 June 2020. tidytuesday, https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-06-30/readme.md.
+
+Wikipedia contributors. "List of X-Men members." Wikipedia, The Free Encyclopedia. Wikipedia, The Free Encyclopedia, 10 Dec. 2025.
+https://en.wikipedia.org/wiki/List_of_X-Men_members 
+
