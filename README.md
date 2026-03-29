@@ -6,22 +6,22 @@
         passionate about using data science as a tool to advance research in behavioral studies.  
     </p>
 
-    <div class="skills-list">
+<div class="skills-list">
         <li>Python</li>
         <li>R</li>
         <li>LaTeX</li>
         <li>Data Visualization</li>
         <li>Machine Learning</li>
-    </div>
+</div>
 
     <h2>Education</h2>
     
-    <div class="education-item">
+<div class="education-item">
         <strong>Simmons University</strong>, Boston, MA<br>
         <em>Bachelor of Science in Mathematical Sciences</em><br>
         Minor in Data Science and Analytics<br>
         <strong>Expected:</strong> May 2026
-    </div>
+</div>
 
     <div class="education-item">
         <strong>Washington University</strong>, St. Louis, MO<br>
