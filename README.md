@@ -7,6 +7,7 @@
     </p>
 
 <div class="skills-list">
+    ## Technical Skills
         <li>Python</li>
         <li>R</li>
         <li>LaTeX</li>
