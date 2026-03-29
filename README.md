@@ -22,5 +22,5 @@ Expected Graduation date: May 2028 <br>
 [Project2: Immigration Enforcement Across U.S Borders](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Sydney_Whalen_SIR_Midterm.pdf) <br>
 <p>This poject analyzes U.S customs data from the period of 2021-2024, and compares enforcement practices across the Northern and Southern U.S. borders. This project showcases strong visualtion practices and accompanying written analysis.</p>
 
-[Project 3](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Immigration%20Enforcement%20Across%20U.S.%20Borders.pdf)
+[Project 3: SIR Model](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Immigration%20Enforcement%20Across%20U.S.%20Borders.pdf)
 <p>This paper analyzes the dynamics for an epidemic outbreak following an SIR model (susceptible, infected, recovered). The paper showcases proficiency in LaTeX and Python. The analysis of the population involves reducing a system of three differential equations to two equations, solving for the systems critical points, and determining the stability of the system dependent on shfiting parameters. Additionally, visulations using Pythons graphing capabilities are used to support my calculations. The paper incldues thurough analysis of the computational work, interpreted into real affects for a population suffering an epidemic. </p>
