@@ -6,13 +6,13 @@
         passionate about using data science as a tool to advance research in behavioral studies.  
     </p>
 
-    <ul class="skills-list">
+    <div class="skills-list">
         <li>Python</li>
         <li>R</li>
         <li>LaTeX</li>
         <li>Data Visualization</li>
         <li>Machine Learning</li>
-    </ul>
+    </div>
 
     <h2>Education</h2>
     
