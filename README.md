@@ -16,4 +16,4 @@ Expected Graduation date: May 2028 <br>
 ## Projects 
 [Project 1](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Female%20Representation%20in%20Comics.pdf) <br>
 [Project2](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Sydney_Whalen_SIR_Midterm.pdf) <br>
-[Project 3](
+[Project 3](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Immigration%20Enforcement%20Across%20U.S.%20Borders.pdf)
