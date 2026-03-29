@@ -6,14 +6,14 @@
         passionate about using data science as a tool to advance research in people centered fields.  
     </p>
 
-<div class="skills-list">
 <strong> Technical Skills </strong>
+    <div class="skills-list">
         <li>Python</li>
         <li>R</li>
         <li>LaTeX</li>
         <li>Data Visualization</li>
         <li>Machine Learning</li>
-</div>
+    </div>
 
     <h2>Education</h2>
     
