@@ -19,6 +19,7 @@
 <div class="education-item">
         <strong>Washington University</strong>, St. Louis, MO<br>
         <em>Bachelor of Science in Systems Science and Engineering</em><br>
+        Entering: August 2026 <br>
         <strong>Expected:</strong> May 2028
 </div>
 
