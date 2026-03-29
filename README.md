@@ -1,26 +1,70 @@
-## Welcome!
-<p>Hello, my name is Sydney Whalen and I am an undergraduate student within Simmon Universitys engineering dual degree program. I am anticipating my Bachelors of Science in Mathematical Sciences May 2026, and will be continuing my education at Washington University to earn a Bachelors of Science in Systems Science and Engineering.</p> 
+<h1>Sydney Whalen</h1>
+    <p><strong>Mathematical Sciences | Systems Science & Engineering | Data Science</strong></p>
+    <p>
+        I am an undergraduate student within the Simmons University engineering dual-degree program. 
+        My academic interests sit at the intersection of STEM, sociology, and policy making. I'm 
+        passionate about using data science as a tool to advance research in behavioral studies. 
+        
+    </p>
 
-My interests of study beyond STEM are centered on sociologgy and policy making. Many of these projects showcase an interest in these topics. <br>
+    <ul class="skills-list">
+        <li>Python</li>
+        <li>R</li>
+        <li>LaTeX</li>
+        <li>Data Visualization</li>
+        <li>Machine Learning</li>
+    </ul>
 
-## Education 
-**Bachelor of Science in Mathematical Sciences** <br>
-*Minor in Data Science and Analytics* <br>
-Simmons University, Boston, MA <br> 
-Expected Graduation date: May 2026
+    <h2>Education</h2>
+    
+    <div class="education-item">
+        <strong>Simmons University</strong>, Boston, MA<br>
+        <em>Bachelor of Science in Mathematical Sciences</em><br>
+        Minor in Data Science and Analytics<br>
+        <strong>Expected:</strong> May 2026
+    </div>
 
-**Bachelors of Science in Systems Science and Engineering** <br>
-Washington University, St. Louis, MI <br>
-Expected Graduation date: May 2028 <br>
+    <div class="education-item">
+        <strong>Washington University</strong>, St. Louis, MO<br>
+        <em>Bachelor of Science in Systems Science and Engineering</em><br>
+        <strong>Expected:</strong> May 2028
+    </div>
 
-## Projects
-<p>The folllowing portfolio demonstrates projects across the fields of datascience, statistics, and mathematical modelling. These projects demonstrate my proficiency in python, R, and LaTeX. </p> 
+    <hr>
 
-[Project 1: Female Representation in Comics](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Female%20Representation%20in%20Comics.pdf) <br>
-<p>This project explores the question of whether instances of violence agaisnt female superheros is an indicator of comics inability to pass the bechdel test. The project implements skills of data visualization and dat wrangling. Additionally I created several machine learning schemes and performed an analysis comparing logistic modelling results against random forest ensemble methods. </p>
+    <h2>Projects</h2>
 
-[Project2: Immigration Enforcement Across U.S Borders](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Sydney_Whalen_SIR_Midterm.pdf) <br>
-<p>This poject analyzes U.S customs data from the period of 2021-2024, and compares enforcement practices across the Northern and Southern U.S. borders. This project showcases strong visualtion practices and accompanying written analysis.</p>
+    <div class="project-item">
+        <h3><a href="https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Female%20Representation%20in%20Comics.pdf">Female Representation in Comics</a></h3>
+        <p>
+            This project explores whether instances of violence against female superheroes serve as an indicator 
+            of a comic's inability to pass the Bechdel Test. 
+        </p>
+        <ul>
+            <li>Implemented data visualization and data wrangling with multiple datsets.</li>
+            <li>Performed comparative analysis between alogistic modeling and Random Forest ensemble methods.</li>
+        </ul>
+    </div>
 
-[Project 3: SIR Model](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Immigration%20Enforcement%20Across%20U.S.%20Borders.pdf)
-<p>This paper analyzes the dynamics for an epidemic outbreak following an SIR model (susceptible, infected, recovered). The paper showcases proficiency in LaTeX and Python. The analysis of the population involves reducing a system of three differential equations to two equations, solving for the systems critical points, and determining the stability of the system dependent on shfiting parameters. Additionally, visulations using Pythons graphing capabilities are used to support my calculations. The paper incldues thurough analysis of the computational work, interpreted into real affects for a population suffering an epidemic. </p>
+    <div class="project-item">
+        <h3><a href="https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Sydney_Whalen_SIR_Midterm.pdf">Immigration Enforcement Across U.S. Borders</a></h3>
+        <p>
+            An analysis of U.S. Customs data from 2021–2024, comparing enforcement practices across the Northern and Southern U.S. borders. 
+            This project showcases strong visualization practices and written analysis critiquing current immigration policy.
+        </p>
+    </div>
+
+    <div class="project-item">
+        <h3><a href="https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Immigration%20Enforcement%20Across%20U.S.%20Borders.pdf">SIR Model: Epidemic Dynamics</a></h3>
+        <p>
+            A mathematical analysis of an epidemic outbreak following the SIR (Susceptible, Infected, Recovered) model.
+        </p>
+        <ul>
+            <li>Reduced a system of three differential equations to two, solving for critical points and stability.</li>
+            <li>Utilized Python for computational graphing.</li>
+            <li>Interpreted mathematical findings into real-world impacts for populations suffering from an epidemic.</li>
+        </ul>
+    </div>
+
+</body>
+</html>
