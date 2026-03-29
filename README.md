@@ -3,8 +3,7 @@
     <p>
         I am an undergraduate student within the Simmons University engineering dual-degree program. 
         My academic interests sit at the intersection of STEM, sociology, and policy making. I'm 
-        passionate about using data science as a tool to advance research in behavioral studies. 
-        
+        passionate about using data science as a tool to advance research in behavioral studies.  
     </p>
 
     <ul class="skills-list">
