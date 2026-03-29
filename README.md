@@ -14,5 +14,6 @@ Washington University, St. Louis, MI <br>
 Expected Graduation date: May 2028 <br>
 
 ## Projects 
-[Project 1](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Female%20Representation%20in%20Comics.pdf) 
-[Project2](
+[Project 1](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Female%20Representation%20in%20Comics.pdf) <br>
+[Project2](https://github.com/Sydney-Whalen/SW_Portfolio/blob/main/Sydney_Whalen_SIR_Midterm.pdf) <br>
+[Project 3](
